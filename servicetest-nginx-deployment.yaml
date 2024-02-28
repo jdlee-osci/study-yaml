@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: servicetest-nginx
+  name: servicetest-nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: servicetest-nginx
+  strategy:
+     type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: servicetest-nginx
+    spec:
+      initContainers:
+      - image: busybox:latest
+        name: init
+        command:
+          - sh
+          - -c
+          - 'echo "echo nginx server : ${HOSTNAME}" > /tmp/www/index.html'
+        volumeMounts:
+          - mountPath: /tmp/www
+            name: www-root
+      containers:
+      - image: nginx:latest
+        name: nginx
+        volumeMounts:
+          - mountPath: /usr/share/nginx/html
+            name: www-root
+      volumes:
+        - name: www-root
+          emptyDir: {}

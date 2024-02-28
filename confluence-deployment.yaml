@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: confluence-deployment
+  name: confluence-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: confluence-deployment
+  strategy:
+     type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: confluence-deployment
+    spec:
+      containers:
+      - image: atlassian/confluence:8.5.6
+        name: confluence
+        resources: {}
+status: {}

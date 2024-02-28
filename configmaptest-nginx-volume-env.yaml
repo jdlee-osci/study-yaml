@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  default.conf: |
+    server {
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;
+    
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+    
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-html
+data:
+  index.html: "nginx html index page"
+  50x.html: "50x error"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envtest
+data:
+  ENV01: testvalue
+  EVALUE: evalue test
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: config-test
+  name: config-test
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx
+    env:
+      - name: ENV01
+        valueFrom:
+          configMapKeyRef:
+            name: envtest
+            key: ENV01
+      - name: ENV02
+        valueFrom:
+          configMapKeyRef:
+            name: envtest
+            key: EVALUE
+    volumeMounts:
+      - mountPath: /usr/share/nginx/html
+        name: html-configmap
+      - mountPath: /etc/nginx/conf.d/default.conf
+        name: config-configmap
+        subPath: default.conf
+
+  volumes:
+    - name: html-configmap
+      configMap:
+        name: nginx-html
+    - name: config-configmap
+      configMap:
+        name: nginx-config
+

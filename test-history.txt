@@ -1,0 +1,17 @@
+export KUBECONFIG=/root/study-yaml/kubeconfig
+
+# cluster set
+kubectl config set-cluster utest --server=https://10.252.1.218:6443 --certificate-authority=/playcecloud/data/kubespray/inventory/utest/utest-ca.crt
+# credential set
+kubectl config set-credentials utest-admin --client-certificate=/playcecloud/data/kubespray/inventory/utest/utest-admin.crt --client-key=/playcecloud/data/kubespray/inventory/utest/utest-admin.key
+# context set
+kubectl config set-context admin@utest --cluster=utest --user=utest-admin --namespace=study
+# use context
+kubectl config use-context admin@utest
+
+# 네임스페이스가 없으므로 생성
+kubectl create namespace study
+
+# confluence server run
+kubectl run --image=atlassian/confluence:8.5.6 confluence
+

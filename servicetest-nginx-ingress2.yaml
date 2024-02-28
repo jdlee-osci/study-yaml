@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: servicetest-nginx-ingress2
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: servicetest.testurl.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: service-test-clusterip
+            port:
+              number: 80
+        path: /cip(/|$)(.*)
+        pathType: Prefix
+      - backend:
+          service:
+            name: service-test-nodeport
+            port:
+              number: 8080
+        path: /nport(/|$)(.*)
+        pathType: Prefix
+
+
